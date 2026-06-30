@@ -303,6 +303,227 @@ def lever_card(l: dict, is_all: bool = False) -> str:
 </a>"""
 
 
+# ===================== bottom illustration: replay-simulation ================
+# A self-contained inline SVG (no CDN) illustrating the plan to A/B OpenEvolve's
+# design choices (above all feature_dimensions for the MAP-Elites grid) WITHOUT
+# paying for live end-to-end outer-loop rollouts: pre-compute a lineage-tree POOL
+# of outer-loop variations with known (cost, accuracy), then REPLAY OpenEvolve's
+# ProgramDatabase over that pool — drawing each "child" from the pool instead of
+# an LLM rollout — and ask whether a cost/accuracy-frontier-best program surfaces
+# as the database's best_program. Mechanics are faithful to baseline-submodules/
+# openevolve/openevolve/database.py (MAP-Elites binning, one-elite-per-cell by
+# fitness that excludes the feature dims, islands + ring migration, parent
+# sampling: exploration / exploitation-from-archive / random).
+
+def evolve_sim_svg() -> str:
+    return r"""
+<svg viewBox="0 0 1180 620" role="img"
+     aria-label="Replay-simulation of OpenEvolve over a pre-computed lineage-tree pool of outer-loop runs, to cheaply ablate the MAP-Elites feature dimensions."
+     xmlns="http://www.w3.org/2000/svg" class="evolve-svg">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-end">
+      <path d="M0 0L10 5L0 10z" fill="#6ea8fe"/>
+    </marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-end">
+      <path d="M0 0L10 5L0 10z" fill="#9aa3af"/>
+    </marker>
+    <linearGradient id="frontier" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#5bd6a0"/><stop offset="1" stop-color="#8b9cff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ============================ PANEL 1 : the POOL ====================== -->
+  <g>
+    <rect x="14" y="40" width="372" height="540" rx="14" class="panel-box"/>
+    <text x="34" y="72" class="svg-h">1 &#183; The pool we already have</text>
+    <text x="34" y="95" class="svg-sub">Several real outer-loop runs (you + co-worker),</text>
+    <text x="34" y="112" class="svg-sub">each seeded from a lever &#8594; a lineage tree.</text>
+
+    <!-- lineage tree: two seeded parents, each evolving children -->
+    <!-- parent A (lever-seeded) -->
+    <text x="40" y="150" class="svg-tag accent">seed: lever&#160;3 (verify)</text>
+    <line x1="70" y1="186" x2="150" y2="232" class="edge"/>
+    <line x1="70" y1="186" x2="150" y2="300" class="edge"/>
+    <line x1="150" y1="232" x2="250" y2="210" class="edge"/>
+    <line x1="150" y1="232" x2="250" y2="262" class="edge"/>
+    <circle cx="70"  cy="186" r="13" class="node parent"/>
+    <circle cx="150" cy="232" r="11" class="node"/>
+    <circle cx="150" cy="300" r="11" class="node"/>
+    <circle cx="250" cy="210" r="11" class="node frontier-node"/>
+    <circle cx="250" cy="262" r="11" class="node"/>
+    <text x="70"  y="190" class="nlab">P</text>
+    <text x="270" y="194" class="nlab small frontier-tx">&#9670; frontier-best</text>
+
+    <!-- parent B (different lever seed) -->
+    <text x="40" y="372" class="svg-tag accent2">seed: lever&#160;1 (retrieval)</text>
+    <line x1="70" y1="408" x2="150" y2="408" class="edge"/>
+    <line x1="150" y1="408" x2="250" y2="386" class="edge"/>
+    <line x1="150" y1="408" x2="250" y2="438" class="edge"/>
+    <line x1="70" y1="408" x2="150" y2="476" class="edge"/>
+    <circle cx="70"  cy="408" r="13" class="node parent2"/>
+    <circle cx="150" cy="408" r="11" class="node"/>
+    <circle cx="250" cy="386" r="11" class="node"/>
+    <circle cx="250" cy="438" r="11" class="node frontier-node"/>
+    <circle cx="150" cy="476" r="11" class="node"/>
+    <text x="70" y="412" class="nlab">P</text>
+
+    <!-- each node carries (cost, acc) -->
+    <text x="34" y="528" class="svg-note">each node = one committed harness variant,</text>
+    <text x="34" y="546" class="svg-note">with a measured <tspan class="mono">(cost, accuracy)</tspan> already in hand.</text>
+    <text x="34" y="566" class="svg-note frontier-tx">&#9670; = known best on the cost&#8211;accuracy frontier.</text>
+  </g>
+
+  <!-- arrow pool -> sim -->
+  <line x1="392" y1="300" x2="436" y2="300" class="flow" marker-end="url(#ar)"/>
+  <text x="414" y="290" class="svg-flowlab" text-anchor="middle">replay</text>
+
+  <!-- ===================== PANEL 2 : the SIMULATION ====================== -->
+  <g>
+    <rect x="442" y="40" width="356" height="540" rx="14" class="panel-box"/>
+    <text x="462" y="72" class="svg-h">2 &#183; Simulated OpenEvolve</text>
+    <text x="462" y="95" class="svg-sub">Run the real <tspan class="mono">ProgramDatabase</tspan> loop &#8212;</text>
+    <text x="462" y="112" class="svg-sub">but a &#8220;child&#8221; is <tspan class="em">drawn from the pool,</tspan></text>
+    <text x="462" y="129" class="svg-sub">not an LLM rollout (no live outer loop).</text>
+
+    <!-- the loop ring -->
+    <g class="loopbox">
+      <rect x="470" y="150" width="300" height="232" rx="12" class="loop-bg"/>
+      <text x="620" y="176" class="svg-step" text-anchor="middle">the evolution step (repeated)</text>
+
+      <rect x="492" y="192" width="256" height="34" rx="8" class="step-card"/>
+      <text x="504" y="214" class="step-tx"><tspan class="mono">sample</tspan> parent + inspirations (per island)</text>
+
+      <rect x="492" y="236" width="256" height="34" rx="8" class="step-card pick"/>
+      <text x="504" y="258" class="step-tx">pick child = pool node whose parent matches</text>
+
+      <rect x="492" y="280" width="256" height="34" rx="8" class="step-card"/>
+      <text x="504" y="302" class="step-tx"><tspan class="mono">add()</tspan> &#8594; bin it, keep 1 elite / cell</text>
+
+      <rect x="492" y="324" width="256" height="34" rx="8" class="step-card"/>
+      <text x="504" y="346" class="step-tx">round-robin islands &#183; ring <tspan class="mono">migrate</tspan></text>
+
+      <!-- recirculation arrow -->
+      <path d="M748 343 q22 0 22 -28 v-96 q0 -27 -24 -27" class="flow thin" fill="none" marker-end="url(#arw)"/>
+    </g>
+
+    <text x="462" y="412" class="svg-note">Parent sampling stays faithful: exploration</text>
+    <text x="462" y="430" class="svg-note">(island-random) &#183; exploitation (archive elites)</text>
+    <text x="462" y="448" class="svg-note">&#183; random &#8212; weighted by fitness.</text>
+    <text x="462" y="474" class="svg-note dim">Cheap: 0 LLM calls, 0 agent rollouts &#8212; just</text>
+    <text x="462" y="492" class="svg-note dim">bookkeeping over points we already paid for.</text>
+
+    <rect x="462" y="512" width="316" height="52" rx="10" class="knob-box"/>
+    <text x="476" y="533" class="knob-h">ablate cheaply &#8594; the design knobs</text>
+    <text x="476" y="552" class="knob-tx"><tspan class="mono">feature_dimensions</tspan> &#183; <tspan class="mono">feature_bins</tspan> &#183; #islands &#183; ratios</text>
+  </g>
+
+  <!-- arrow sim -> grid -->
+  <line x1="804" y1="300" x2="848" y2="300" class="flow" marker-end="url(#ar)"/>
+
+  <!-- ===================== PANEL 3 : grid + verdict ====================== -->
+  <g>
+    <rect x="854" y="40" width="312" height="540" rx="14" class="panel-box"/>
+    <text x="874" y="72" class="svg-h">3 &#183; MAP-Elites grid</text>
+    <text x="874" y="95" class="svg-sub">Axes = the chosen <tspan class="mono">feature_dimensions</tspan></text>
+    <text x="874" y="112" class="svg-sub">(the choice under test).</text>
+
+    <!-- grid: 5x5 cells, axes accuracy (y) vs cost (x) -->
+    <g transform="translate(916,150)">
+      <!-- frontier sweep behind cells -->
+      <path d="M0 200 L0 120 Q90 70 200 0" stroke="url(#frontier)" stroke-width="3" fill="none" opacity="0.5"/>
+      <!-- cells -->
+      <g class="cellgrid">
+        <rect x="0"   y="0"   width="40" height="40" class="cell"/>
+        <rect x="40"  y="0"   width="40" height="40" class="cell"/>
+        <rect x="80"  y="0"   width="40" height="40" class="cell occ"/>
+        <rect x="120" y="0"   width="40" height="40" class="cell"/>
+        <rect x="160" y="0"   width="40" height="40" class="cell win"/>
+        <rect x="0"   y="40"  width="40" height="40" class="cell"/>
+        <rect x="40"  y="40"  width="40" height="40" class="cell occ"/>
+        <rect x="80"  y="40"  width="40" height="40" class="cell"/>
+        <rect x="120" y="40"  width="40" height="40" class="cell occ"/>
+        <rect x="160" y="40"  width="40" height="40" class="cell"/>
+        <rect x="0"   y="80"  width="40" height="40" class="cell occ"/>
+        <rect x="40"  y="80"  width="40" height="40" class="cell"/>
+        <rect x="80"  y="80"  width="40" height="40" class="cell occ"/>
+        <rect x="120" y="80"  width="40" height="40" class="cell"/>
+        <rect x="160" y="80"  width="40" height="40" class="cell"/>
+        <rect x="0"   y="120" width="40" height="40" class="cell"/>
+        <rect x="40"  y="120" width="40" height="40" class="cell occ"/>
+        <rect x="80"  y="120" width="40" height="40" class="cell"/>
+        <rect x="120" y="120" width="40" height="40" class="cell"/>
+        <rect x="160" y="120" width="40" height="40" class="cell occ"/>
+        <rect x="0"   y="160" width="40" height="40" class="cell occ"/>
+        <rect x="40"  y="160" width="40" height="40" class="cell"/>
+        <rect x="80"  y="160" width="40" height="40" class="cell"/>
+        <rect x="120" y="160" width="40" height="40" class="cell occ"/>
+        <rect x="160" y="160" width="40" height="40" class="cell"/>
+      </g>
+      <!-- the winning cell gets the frontier marker -->
+      <path d="M180 13 l7 12 l-14 0 z" class="winmark"/>
+      <!-- axes -->
+      <line x1="0" y1="208" x2="200" y2="208" class="axis"/>
+      <line x1="-8" y1="0" x2="-8" y2="200" class="axis"/>
+      <text x="100" y="230" class="axlab" text-anchor="middle">cost &#8594;</text>
+      <text x="-20" y="100" class="axlab" text-anchor="middle" transform="rotate(-90,-20,100)">accuracy &#8594;</text>
+    </g>
+
+    <!-- verdict -->
+    <rect x="874" y="412" width="272" height="152" rx="10" class="verdict-box"/>
+    <text x="888" y="440" class="verdict-h">the question this answers</text>
+    <text x="888" y="466" class="verdict-tx">Does the pool&#8217;s frontier-best</text>
+    <text x="888" y="486" class="verdict-tx">program <tspan class="em">get surfaced</tspan> as the</text>
+    <text x="888" y="506" class="verdict-tx">database&#8217;s <tspan class="mono">best_program</tspan>?</text>
+    <text x="888" y="534" class="verdict-tx dim">If a feature choice buries it,</text>
+    <text x="888" y="552" class="verdict-tx dim">that choice is wrong &#8212; reject it.</text>
+  </g>
+</svg>
+"""
+
+
+def evolve_section() -> str:
+    svg = evolve_sim_svg()
+    return f"""
+<section class="evolve">
+  <h2 class="section-title">Next: wiring the outer loop into OpenEvolve &mdash; tested by replay-simulation</h2>
+  <p class="lede evolve-lede">Wiring our <strong>mutator&rsquo;s outer loop</strong> into <strong>OpenEvolve</strong>
+  (the AlphaEvolve-style MAP-Elites + island evolver) forces design choices &mdash; above all the
+  <strong><code>feature_dimensions</code></strong> the MAP-Elites grid bins on. Running OpenEvolve with the
+  <em>live</em> outer loop inside it, end-to-end, is far too expensive to ablate. So we test the choices on a
+  <strong>replay-simulation</strong> instead.</p>
+  <div class="evolve-figure">
+    {svg}
+  </div>
+  <div class="evolve-cards">
+    <div class="ec">
+      <span class="ec-k">The pool</span>
+      <p>We already ran several outer-loop variations &mdash; each <strong>seeded from one lever</strong> and
+      evolved into a <strong>lineage tree</strong> of committed harness variants. Every node has a measured
+      <code>(cost, accuracy)</code>, so we know which ones sit on the <strong>cost&ndash;accuracy frontier</strong>.</p>
+    </div>
+    <div class="ec">
+      <span class="ec-k">The trick</span>
+      <p>Run the <em>real</em> OpenEvolve <code>ProgramDatabase</code> loop &mdash; sample a parent, place the
+      child, keep one elite per grid cell, migrate across islands &mdash; but a &ldquo;child&rdquo; is
+      <strong>drawn from the pool</strong> (the lineage child of the sampled parent) instead of a fresh LLM
+      rollout. <strong>Zero rollouts, zero LLM calls.</strong></p>
+    </div>
+    <div class="ec">
+      <span class="ec-k">The payoff</span>
+      <p>Now we can A/B the OpenEvolve design knobs &mdash; <code>feature_dimensions</code>,
+      <code>feature_bins</code>, island count, exploration/exploitation ratios &mdash; in seconds, and check the
+      one thing that matters: <strong>does a frontier-best program get surfaced as <code>best_program</code></strong>,
+      or does a bad feature choice bury it?</p>
+    </div>
+  </div>
+  <p class="evolve-foot">Simulation mechanics mirror OpenEvolve&rsquo;s database faithfully: per-island MAP-Elites
+  binning with dynamic min&ndash;max feature scaling, one elite per cell decided by a <em>fitness that excludes the
+  feature dimensions</em>, ring-topology migration on a generation interval, and parent sampling split across
+  exploration / archive-exploitation / random. The only substitution is the rollout &rarr; a pool lookup.</p>
+</section>
+"""
+
+
 def build_index() -> str:
     intro = """
 <section class="hero">
@@ -330,7 +551,7 @@ def build_index() -> str:
   </div>
 </section>
 """
-    return page("Mutator lever manuals", intro + grid, depth=0)
+    return page("Mutator lever manuals", intro + grid + evolve_section(), depth=0)
 
 
 def meta_strip(l: dict) -> str:
@@ -466,6 +687,68 @@ main{max-width:var(--maxw); margin:0 auto; padding:0 24px 64px}
 .doc tr:last-child td{border-bottom:0}
 .doc td code,.doc th code{white-space:nowrap}
 
+/* ===== bottom illustration: OpenEvolve replay-simulation ===== */
+.evolve{margin-top:60px; padding-top:34px; border-top:1px solid var(--line)}
+.evolve .section-title{color:var(--accent); font-size:.9rem}
+.evolve-lede{margin:0 0 22px; max-width:88ch}
+.evolve-figure{
+  background:linear-gradient(180deg,#10131a,#0d1016); border:1px solid var(--line);
+  border-radius:16px; padding:14px; overflow-x:auto;
+}
+.evolve-svg{display:block; width:100%; min-width:980px; height:auto}
+.evolve-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:22px 0 8px}
+.ec{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:13px; padding:16px 18px}
+.ec-k{display:inline-block; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  font-weight:700; color:var(--accent); margin-bottom:8px}
+.ec p{margin:0; font-size:.92rem; line-height:1.58; color:#d0d5de}
+.ec code{font-size:.84em}
+.evolve-foot{margin:18px 0 8px; font-size:.86rem; line-height:1.6; color:var(--muted); max-width:92ch}
+
+/* SVG primitives */
+.evolve-svg .panel-box{fill:#12151c; stroke:#283040; stroke-width:1}
+.evolve-svg .svg-h{fill:#eef1f6; font:700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .svg-sub{fill:#c2c9d4; font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .svg-step{fill:#aeb6c2; font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; letter-spacing:.04em}
+.evolve-svg .svg-note{fill:#9aa3af; font:12.5px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .svg-note.dim{fill:#7d8593}
+.evolve-svg .svg-tag{font:700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; letter-spacing:.02em}
+.evolve-svg .svg-tag.accent{fill:#6ea8fe}
+.evolve-svg .svg-tag.accent2{fill:#8b9cff}
+.evolve-svg .svg-flowlab{fill:#6ea8fe; font:600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .mono{font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; fill:#cfe3ff; font-size:.92em}
+.evolve-svg .em{fill:#e4d9b8; font-style:italic}
+.evolve-svg .edge{stroke:#39435a; stroke-width:1.6}
+.evolve-svg .node{fill:#1d2735; stroke:#46597d; stroke-width:1.6}
+.evolve-svg .node.parent{fill:#243a5e; stroke:#6ea8fe; stroke-width:2}
+.evolve-svg .node.parent2{fill:#2a2f57; stroke:#8b9cff; stroke-width:2}
+.evolve-svg .node.frontier-node{fill:#1e4035; stroke:#5bd6a0; stroke-width:2.4}
+.evolve-svg .nlab{fill:#dfe6f0; font:600 11px -apple-system,BlinkMacSystemFont,sans-serif; text-anchor:middle}
+.evolve-svg .nlab.small{font-size:11px; text-anchor:start}
+.evolve-svg .frontier-tx{fill:#5bd6a0}
+.evolve-svg .flow{stroke:#6ea8fe; stroke-width:2.2; fill:none}
+.evolve-svg .flow.thin{stroke:#9aa3af; stroke-width:1.6}
+.evolve-svg .loop-bg{fill:#0f141c; stroke:#283040; stroke-width:1}
+.evolve-svg .step-card{fill:#171c26; stroke:#2e3848; stroke-width:1}
+.evolve-svg .step-card.pick{fill:#16241f; stroke:#2f5a48}
+.evolve-svg .step-tx{fill:#c8cfda; font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .knob-box{fill:#161a28; stroke:#33405e; stroke-width:1}
+.evolve-svg .knob-h{fill:#8b9cff; font:700 11px -apple-system,BlinkMacSystemFont,sans-serif; letter-spacing:.08em; text-transform:uppercase}
+.evolve-svg .knob-tx{fill:#c8cfda; font:12.5px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .cell{fill:#141922; stroke:#2a3342; stroke-width:1}
+.evolve-svg .cell.occ{fill:#26344a}
+.evolve-svg .cell.win{fill:#1e4035; stroke:#5bd6a0; stroke-width:2}
+.evolve-svg .winmark{fill:#5bd6a0}
+.evolve-svg .axis{stroke:#46597d; stroke-width:1.4}
+.evolve-svg .axlab{fill:#9aa3af; font:11px -apple-system,BlinkMacSystemFont,sans-serif}
+.evolve-svg .verdict-box{fill:#10131a; stroke:#33405e; stroke-width:1}
+.evolve-svg .verdict-h{fill:#5bd6a0; font:700 11px -apple-system,BlinkMacSystemFont,sans-serif; letter-spacing:.1em; text-transform:uppercase}
+.evolve-svg .verdict-tx{fill:#d5dae2; font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .verdict-tx.dim{fill:#8a92a0; font-size:12.5px}
+
+@media (max-width:820px){
+  .evolve-cards{grid-template-columns:1fr}
+}
 @media (max-width:560px){
   .hero h1{font-size:2rem}
   .lever-head{flex-direction:column; gap:10px}

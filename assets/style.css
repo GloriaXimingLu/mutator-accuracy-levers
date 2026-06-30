@@ -95,6 +95,68 @@ main{max-width:var(--maxw); margin:0 auto; padding:0 24px 64px}
 .doc tr:last-child td{border-bottom:0}
 .doc td code,.doc th code{white-space:nowrap}
 
+/* ===== bottom illustration: OpenEvolve replay-simulation ===== */
+.evolve{margin-top:60px; padding-top:34px; border-top:1px solid var(--line)}
+.evolve .section-title{color:var(--accent); font-size:.9rem}
+.evolve-lede{margin:0 0 22px; max-width:88ch}
+.evolve-figure{
+  background:linear-gradient(180deg,#10131a,#0d1016); border:1px solid var(--line);
+  border-radius:16px; padding:14px; overflow-x:auto;
+}
+.evolve-svg{display:block; width:100%; min-width:980px; height:auto}
+.evolve-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:22px 0 8px}
+.ec{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+  border-radius:13px; padding:16px 18px}
+.ec-k{display:inline-block; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  font-weight:700; color:var(--accent); margin-bottom:8px}
+.ec p{margin:0; font-size:.92rem; line-height:1.58; color:#d0d5de}
+.ec code{font-size:.84em}
+.evolve-foot{margin:18px 0 8px; font-size:.86rem; line-height:1.6; color:var(--muted); max-width:92ch}
+
+/* SVG primitives */
+.evolve-svg .panel-box{fill:#12151c; stroke:#283040; stroke-width:1}
+.evolve-svg .svg-h{fill:#eef1f6; font:700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .svg-sub{fill:#c2c9d4; font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .svg-step{fill:#aeb6c2; font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; letter-spacing:.04em}
+.evolve-svg .svg-note{fill:#9aa3af; font:12.5px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .svg-note.dim{fill:#7d8593}
+.evolve-svg .svg-tag{font:700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; letter-spacing:.02em}
+.evolve-svg .svg-tag.accent{fill:#6ea8fe}
+.evolve-svg .svg-tag.accent2{fill:#8b9cff}
+.evolve-svg .svg-flowlab{fill:#6ea8fe; font:600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .mono{font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; fill:#cfe3ff; font-size:.92em}
+.evolve-svg .em{fill:#e4d9b8; font-style:italic}
+.evolve-svg .edge{stroke:#39435a; stroke-width:1.6}
+.evolve-svg .node{fill:#1d2735; stroke:#46597d; stroke-width:1.6}
+.evolve-svg .node.parent{fill:#243a5e; stroke:#6ea8fe; stroke-width:2}
+.evolve-svg .node.parent2{fill:#2a2f57; stroke:#8b9cff; stroke-width:2}
+.evolve-svg .node.frontier-node{fill:#1e4035; stroke:#5bd6a0; stroke-width:2.4}
+.evolve-svg .nlab{fill:#dfe6f0; font:600 11px -apple-system,BlinkMacSystemFont,sans-serif; text-anchor:middle}
+.evolve-svg .nlab.small{font-size:11px; text-anchor:start}
+.evolve-svg .frontier-tx{fill:#5bd6a0}
+.evolve-svg .flow{stroke:#6ea8fe; stroke-width:2.2; fill:none}
+.evolve-svg .flow.thin{stroke:#9aa3af; stroke-width:1.6}
+.evolve-svg .loop-bg{fill:#0f141c; stroke:#283040; stroke-width:1}
+.evolve-svg .step-card{fill:#171c26; stroke:#2e3848; stroke-width:1}
+.evolve-svg .step-card.pick{fill:#16241f; stroke:#2f5a48}
+.evolve-svg .step-tx{fill:#c8cfda; font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .knob-box{fill:#161a28; stroke:#33405e; stroke-width:1}
+.evolve-svg .knob-h{fill:#8b9cff; font:700 11px -apple-system,BlinkMacSystemFont,sans-serif; letter-spacing:.08em; text-transform:uppercase}
+.evolve-svg .knob-tx{fill:#c8cfda; font:12.5px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .cell{fill:#141922; stroke:#2a3342; stroke-width:1}
+.evolve-svg .cell.occ{fill:#26344a}
+.evolve-svg .cell.win{fill:#1e4035; stroke:#5bd6a0; stroke-width:2}
+.evolve-svg .winmark{fill:#5bd6a0}
+.evolve-svg .axis{stroke:#46597d; stroke-width:1.4}
+.evolve-svg .axlab{fill:#9aa3af; font:11px -apple-system,BlinkMacSystemFont,sans-serif}
+.evolve-svg .verdict-box{fill:#10131a; stroke:#33405e; stroke-width:1}
+.evolve-svg .verdict-h{fill:#5bd6a0; font:700 11px -apple-system,BlinkMacSystemFont,sans-serif; letter-spacing:.1em; text-transform:uppercase}
+.evolve-svg .verdict-tx{fill:#d5dae2; font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.evolve-svg .verdict-tx.dim{fill:#8a92a0; font-size:12.5px}
+
+@media (max-width:820px){
+  .evolve-cards{grid-template-columns:1fr}
+}
 @media (max-width:560px){
   .hero h1{font-size:2rem}
   .lever-head{flex-direction:column; gap:10px}
