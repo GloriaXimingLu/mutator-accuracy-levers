@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mutator lever manuals</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">Mutator&nbsp;·&nbsp;Lever&nbsp;Manuals</a>
+  <span class="subtle">operating manuals for the Harvey-harness mutator</span>
+</header>
+<main>
+
+<section class="hero">
+  <h1>Mutator lever manuals</h1>
+  <p class="lede">An outer-loop <strong>mutator</strong> (an Opus agent) edits a frozen Harvey legal-agent
+  harness to make it better, scored on a held-out dev gate. Its operating manual is a <code>CLAUDE.md</code>.
+  Below are <strong>seven</strong> manuals: one per accuracy lever from the deep-research catalog, plus a
+  general all-levers manual. Each retargets the same hard-won protocol at a different accuracy goal — and in
+  every one, <strong>accuracy is the objective while cost (and no thrash, no turn-runaway) is the hard gate.</strong></p>
+</section>
+
+<section>
+  <h2 class="section-title">The levers</h2>
+  <div class="grid">
+<a class="card" href="levers/lever1-doc-identity-retrieval.html">
+  <div class="card-head"><span class="badge">1</span><h3>Document-identity retrieval &amp; grounding</h3><span class="conf">HIGH</span></div>
+  <p class="thesis">The #1 long-document failure is grounding a citation in the WRONG source document — make retrieval carry document identity and search inside the text.</p>
+  <span class="card-cta">Read the CLAUDE.md &rarr;</span>
+</a>
+<a class="card" href="levers/lever2-citation-faithfulness.html">
+  <div class="card-head"><span class="badge">2</span><h3>Citation / quote faithfulness</h3><span class="conf">HIGH</span></div>
+  <p class="thesis">Legal citations are frequently fabricated or post-rationalized — re-verify every cited clause against a re-fetched source span before finalize.</p>
+  <span class="card-cta">Read the CLAUDE.md &rarr;</span>
+</a>
+<a class="card" href="levers/lever3-verify-before-finalize.html">
+  <div class="card-head"><span class="badge">3</span><h3>Verify-before-finalize self-critique</h3><span class="conf">HIGH</span></div>
+  <p class="thesis">A model can catch its own errors — but only if the re-check is INDEPENDENT of the draft and GROUNDED in re-fetched sources.</p>
+  <span class="card-cta">Read the CLAUDE.md &rarr;</span>
+</a>
+<a class="card" href="levers/lever4-omission-coverage.html">
+  <div class="card-head"><span class="badge">4</span><h3>Omission / coverage of missing text</h3><span class="conf">HIGH</span></div>
+  <p class="thesis">Flagging risk from the ABSENCE of a clause is a distinct skill models are bad at (~50% vs ~90%) — sweep a document-type checklist for what&#x27;s missing.</p>
+  <span class="card-cta">Read the CLAUDE.md &rarr;</span>
+</a>
+<a class="card" href="levers/lever5-plan-decomposition.html">
+  <div class="card-head"><span class="badge">5</span><h3>Plan + checklist decomposition</h3><span class="conf">HIGH (scope: missing-step / coverage)</span></div>
+  <p class="thesis">Multi-criterion work loses points to SKIPPED subtasks — emit a plan of discrete subtasks and a rubric-aligned checklist so no criterion is silently dropped.</p>
+  <span class="card-cta">Read the CLAUDE.md &rarr;</span>
+</a>
+<a class="card" href="levers/lever6-targeted-reposition.html">
+  <div class="card-head"><span class="badge">6</span><h3>Targeted re-read / re-positioning</h3><span class="conf">MEDIUM (overlaps the eviction lever)</span></div>
+  <p class="thesis">Buried mid-context clauses are a positional effect, not lost information — re-fetch the span and re-present it first/last, don&#x27;t re-read everything.</p>
+  <span class="card-cta">Read the CLAUDE.md &rarr;</span>
+</a>
+  </div>
+</section>
+<section>
+  <h2 class="section-title">Across all levers</h2>
+  <div class="grid one">
+<a class="card all" href="levers/all-levers-accuracy.html">
+  <div class="card-head"><span class="badge">ALL</span><h3>All levers — general accuracy manual</h3></div>
+  <p class="thesis">One disciplined &#x27;improve accuracy&#x27; manual spanning all six families, with GROUNDED &gt; UNGROUNDED as the headline anti-overfit rule.</p>
+  <span class="card-cta">Read the CLAUDE.md &rarr;</span>
+</a>
+  </div>
+</section>
+
+</main>
+<footer class="foot">
+  <span>Mutator operating-manual set — accuracy levers. Methodology only (no benchmark task/rubric data).</span>
+</footer>
+</body>
+</html>
