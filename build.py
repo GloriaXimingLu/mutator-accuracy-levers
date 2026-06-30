@@ -320,6 +320,50 @@ def evolve_sim_svg() -> str:
 <svg viewBox="0 0 1180 620" role="img"
      aria-label="Replay-simulation of OpenEvolve over a pre-computed lineage-tree pool of outer-loop runs, to cheaply ablate the MAP-Elites feature dimensions."
      xmlns="http://www.w3.org/2000/svg" class="evolve-svg">
+  <!-- Self-contained palette: lives INSIDE the SVG so the figure keeps its
+       colors even if the external stylesheet is missing, stale-cached, or
+       blocked. Without these, every shape falls back to SVG-default
+       fill:#000 and the whole illustration renders solid black. The external
+       .evolve-svg rules in style.css carry identical values. -->
+  <style>
+    .evolve-svg .panel-box{fill:#12151c; stroke:#283040}
+    .evolve-svg .svg-h{fill:#eef1f6}
+    .evolve-svg .svg-sub{fill:#c2c9d4}
+    .evolve-svg .svg-step{fill:#aeb6c2}
+    .evolve-svg .svg-note{fill:#9aa3af}
+    .evolve-svg .svg-note.dim{fill:#7d8593}
+    .evolve-svg .svg-tag.accent{fill:#6ea8fe}
+    .evolve-svg .svg-tag.accent2{fill:#8b9cff}
+    .evolve-svg .svg-flowlab{fill:#6ea8fe}
+    .evolve-svg .mono{fill:#cfe3ff}
+    .evolve-svg .em{fill:#e4d9b8}
+    .evolve-svg .edge{stroke:#39435a; fill:none}
+    .evolve-svg .node{fill:#1d2735; stroke:#46597d}
+    .evolve-svg .node.parent{fill:#243a5e; stroke:#6ea8fe}
+    .evolve-svg .node.parent2{fill:#2a2f57; stroke:#8b9cff}
+    .evolve-svg .node.frontier-node{fill:#1e4035; stroke:#5bd6a0}
+    .evolve-svg .nlab{fill:#dfe6f0}
+    .evolve-svg .frontier-tx{fill:#5bd6a0}
+    .evolve-svg .flow{stroke:#6ea8fe; fill:none}
+    .evolve-svg .flow.thin{stroke:#9aa3af}
+    .evolve-svg .loop-bg{fill:#0f141c; stroke:#283040}
+    .evolve-svg .step-card{fill:#171c26; stroke:#2e3848}
+    .evolve-svg .step-card.pick{fill:#16241f; stroke:#2f5a48}
+    .evolve-svg .step-tx{fill:#c8cfda}
+    .evolve-svg .knob-box{fill:#161a28; stroke:#33405e}
+    .evolve-svg .knob-h{fill:#8b9cff}
+    .evolve-svg .knob-tx{fill:#c8cfda}
+    .evolve-svg .cell{fill:#141922; stroke:#2a3342}
+    .evolve-svg .cell.occ{fill:#26344a}
+    .evolve-svg .cell.win{fill:#1e4035; stroke:#5bd6a0}
+    .evolve-svg .winmark{fill:#5bd6a0}
+    .evolve-svg .axis{stroke:#46597d; fill:none}
+    .evolve-svg .axlab{fill:#9aa3af}
+    .evolve-svg .verdict-box{fill:#10131a; stroke:#33405e}
+    .evolve-svg .verdict-h{fill:#5bd6a0}
+    .evolve-svg .verdict-tx{fill:#d5dae2}
+    .evolve-svg .verdict-tx.dim{fill:#8a92a0}
+  </style>
   <defs>
     <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-end">
       <path d="M0 0L10 5L0 10z" fill="#6ea8fe"/>
